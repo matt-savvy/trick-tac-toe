@@ -23,11 +23,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MAKE_MOVE = 'MAKE_MOVE';
+const RESET = 'RESET';
 
-function move(player, row, col) {
+function move(row, col) {
   return {
     type: MAKE_MOVE,
-    player,
     row,
     col,
   };
@@ -41,36 +41,6 @@ function changeTurns(player) {
   if (player === 'O') {
     return 'X';
   }
-}
-
-function gameReducer(state, action) {
-  switch (action.type) {
-    case MAKE_MOVE: {
-      const nextBoard = [...state.board];
-      nextBoard[action.row][action.col] = action.player;
-      const nextPlayer = changeTurns(action.player);
-
-      const moves = [...state.moves, [action.row, action.col]];
-      if (moves.length === 6) {
-        const moveToRemove = moves.shift();
-        const [removeRow, removeCol] = moveToRemove;
-        nextBoard[removeRow][removeCol] = null;
-      }
-
-      return {
-        ...state,
-        board: nextBoard,
-        whoseTurn: nextPlayer,
-        moves,
-      };
-    }
-
-    default:
-      return state;
-  }
-
-  // remove a move
-  return state;
 }
 
 function check(list) {
@@ -102,7 +72,9 @@ function hasWinner(board) {
 
   const possibilities = [...rows, ...cols, diagonalA, diagonalB];
 
-  return possibilities.reduce((accumulator, currentValue) => accumulator || check(currentValue), null);
+  return possibilities.reduce(
+    (accumulator, currentValue) => accumulator || check(currentValue), null,
+  );
 }
 
 const emptyBoard = [
@@ -114,25 +86,72 @@ const emptyBoard = [
 const initialState = {
   whoseTurn: 'X',
   board: emptyBoard,
+  winner: null,
   moves: [],
 };
 
+function gameReducer(state, action) {
+  switch (action.type) {
+    case MAKE_MOVE: {
+      const nextBoard = state.board.map((row) => [...row]);
+
+      nextBoard[action.row][action.col] = state.whoseTurn;
+      const nextPlayer = changeTurns(state.whoseTurn);
+
+      const moves = [...state.moves, [action.row, action.col]];
+      if (moves.length === 6) {
+        const moveToRemove = moves.shift();
+        const [removeRow, removeCol] = moveToRemove;
+        nextBoard[removeRow][removeCol] = null;
+      }
+
+      const winner = hasWinner(nextBoard);
+
+      return {
+        ...state,
+        board: nextBoard,
+        whoseTurn: nextPlayer,
+        moves,
+        winner,
+      };
+    }
+    case RESET:
+      return {
+        ...initialState,
+        whoseTurn: state.whoseTurn,
+      };
+    default:
+      return state;
+  }
+}
+
 function App() {
-  // whose turn is it?
   const [gameState, dispatch] = useReducer(gameReducer, initialState);
-  const { whoseTurn, board } = gameState;
+  const { whoseTurn, board, winner } = gameState;
   const classes = useStyles();
 
-  const handleCellClick = (row, col) => {
-    if (!board[row][col]) {
-      dispatch(move(whoseTurn, row, col));
+  const handleCellClick = React.useCallback((row, col) => {
+    if (winner) {
+      return;
     }
-  };
 
-  const winner = hasWinner(board);
-  if (winner) {
-    console.log(winner);
-  }
+    if (board[row][col]) {
+      return;
+    }
+
+    dispatch(move(row, col));
+  }, [board, winner, dispatch]);
+
+  React.useEffect(() => {
+    if (winner) {
+      setTimeout(() => {
+        const playAgain = window.confirm(`${winner} is winner, play again?!`);
+        if (playAgain) {
+          dispatch({ type: RESET });
+        }
+      }, 250);
+    }
+  }, [winner, dispatch]);
 
   return (
     <Container className={classes.container}>
