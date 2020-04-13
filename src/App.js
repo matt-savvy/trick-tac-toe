@@ -1,9 +1,14 @@
-import React, { useState, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import io from 'socket.io-client';
+
+/*
+eslint
+no-alert: 0
+*/
 
 let socket;
 
@@ -138,7 +143,6 @@ function gameReducer(state, action) {
 
 function App() {
   const [gameState, dispatch] = useReducer(gameReducer, initialState);
-  const [playerName, setPlayerName] = useState(null);
   const {
     whoseTurn, player, board,
   } = gameState;
@@ -184,7 +188,7 @@ function App() {
   }, [winner, player, dispatch]);
 
   if (!socket) {
-    socket = io('http://localhost:3030');
+    socket = io();
   }
 
   socket.on('update', (data) => {

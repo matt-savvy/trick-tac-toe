@@ -2,20 +2,25 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const http = require('http').Server(app);
+const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
-const port = process.env.PORT || 8080;
-const socketPort = 3030;
+const port = process.env.PORT || 3000;
 
-app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/ping', (req, res) => res.send('pong'));
 
-app.get('/*', (req, res) => {
+app.get('/', (req, res) => {
+  console.log(path.join(__dirname, 'build', 'index.html'));
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
+
+/*
+eslint
+no-console: 0
+*/
+
 
 const players = ['X', 'O'];
 let counter = 0;
@@ -41,7 +46,6 @@ io.on('connection', (socket) => {
   });
 });
 
-app.listen(port);
-http.listen(socketPort, () => {
-  console.log(`listening on *:${socketPort}`);
-});
+http.listen(port, () => {
+  console.log(`listening on ${port}`)
+})
