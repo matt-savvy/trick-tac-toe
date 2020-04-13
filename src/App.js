@@ -1,8 +1,11 @@
-import React, { useReducer } from 'react';
-// import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
+import React, { useState, useReducer } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import io from 'socket.io-client';
+
+let socket;
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -24,10 +27,12 @@ const useStyles = makeStyles((theme) => ({
 
 const MAKE_MOVE = 'MAKE_MOVE';
 const RESET = 'RESET';
+const SET_PLAYER = 'SET_PLAYER';
 
-function move(row, col) {
+function move(player, row, col) {
   return {
     type: MAKE_MOVE,
+    player,
     row,
     col,
   };
@@ -84,15 +89,23 @@ const emptyBoard = [
 ];
 
 const initialState = {
+  player: null,
   whoseTurn: 'X',
   board: emptyBoard,
-  winner: null,
   moves: [],
 };
 
 function gameReducer(state, action) {
   switch (action.type) {
+    case SET_PLAYER: {
+      return { ...state, player: action.player };
+    }
     case MAKE_MOVE: {
+      if (action.player !== state.whoseTurn) {
+        // prevent multiple events being hit
+        return state;
+      }
+
       const nextBoard = state.board.map((row) => [...row]);
 
       nextBoard[action.row][action.col] = state.whoseTurn;
@@ -105,20 +118,18 @@ function gameReducer(state, action) {
         nextBoard[removeRow][removeCol] = null;
       }
 
-      const winner = hasWinner(nextBoard);
-
       return {
         ...state,
         board: nextBoard,
         whoseTurn: nextPlayer,
         moves,
-        winner,
       };
     }
     case RESET:
       return {
         ...initialState,
         whoseTurn: state.whoseTurn,
+        player: state.player,
       };
     default:
       return state;
@@ -127,10 +138,18 @@ function gameReducer(state, action) {
 
 function App() {
   const [gameState, dispatch] = useReducer(gameReducer, initialState);
-  const { whoseTurn, board, winner } = gameState;
+  const [playerName, setPlayerName] = useState(null);
+  const {
+    whoseTurn, player, board,
+  } = gameState;
+
+  const winner = hasWinner(board);
   const classes = useStyles();
 
   const handleCellClick = React.useCallback((row, col) => {
+    if (player !== whoseTurn) {
+      return;
+    }
     if (winner) {
       return;
     }
@@ -139,22 +158,45 @@ function App() {
       return;
     }
 
-    dispatch(move(row, col));
-  }, [board, winner, dispatch]);
+    const action = move(player, row, col);
+
+    socket.emit('update', action);
+    dispatch(action);
+  }, [board, winner, whoseTurn, dispatch, player]);
 
   React.useEffect(() => {
-    if (winner) {
-      setTimeout(() => {
+    function gameOverAlert() {
+      if (winner === player) {
+        window.alert(`${winner} is winner! Great work`);
+      } else {
         const playAgain = window.confirm(`${winner} is winner, play again?!`);
         if (playAgain) {
-          dispatch({ type: RESET });
+          const action = { type: RESET };
+          socket.emit('update', action);
+          dispatch(action);
         }
-      }, 250);
+      }
     }
-  }, [winner, dispatch]);
+
+    if (winner) {
+      setTimeout(gameOverAlert, 250);
+    }
+  }, [winner, player, dispatch]);
+
+  if (!socket) {
+    socket = io('http://localhost:3030');
+  }
+
+  socket.on('update', (data) => {
+    dispatch(data);
+  });
+  const whoseTurnString = player && (whoseTurn === player) ? "It's your turn" : `It is ${whoseTurn}'s turn`;
 
   return (
     <Container className={classes.container}>
+      <Typography>
+        {whoseTurnString}
+      </Typography>
       <Grid
         justify="center"
         alignItems="center"
