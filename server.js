@@ -37,10 +37,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('update', action);
   });
 
-
   socket.on('disconnect', () => {
     console.log('user disconnected');
-    counter -= 1;
+    // emit a broadcast to tell you that yourfriend quit
   });
 });
 

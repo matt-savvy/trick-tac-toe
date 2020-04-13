@@ -11,14 +11,14 @@ no-alert: 0
 */
 
 let socket;
-console.log('sanity');
+console.log('insanity');
 const useStyles = makeStyles({
   container: {
     margin: 50,
   },
   cell: {
     fontSize: 90,
-    border: '1px solid blue',
+    border: '1px solid darkcyan',
     height: 250,
     width: 250,
     display: 'flex',
@@ -189,8 +189,10 @@ function App() {
   }
 
   socket.on('update', (data) => {
+    console.log(data);
     dispatch(data);
   });
+
   const whoseTurnString = player && (whoseTurn === player) ? "It's your turn" : `It is ${whoseTurn}'s turn`;
 
   return (
@@ -216,6 +218,7 @@ function App() {
                 className={classes.cell}
                 onClick={() => handleCellClick(row, col)}
                 key={col}
+                xs
               >
                 {cell}
               </Grid>
