@@ -11,16 +11,20 @@ no-alert: 0
 */
 
 let socket;
-
-const useStyles = makeStyles((theme) => ({
+console.log('sanity');
+const useStyles = makeStyles({
   container: {
     margin: 50,
   },
+  grid: {
+    height: 750,
+    width: 750,
+  },
   cell: {
     fontSize: 90,
-    border: '1px solid black',
-    height: theme.spacing(30),
-    width: theme.spacing(30),
+    border: '1px solid blue',
+    height: 250,
+    width: 250,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -215,7 +219,6 @@ function App() {
             {gridRow.map((cell, col) => (
               <Grid
                 item
-                xs
                 className={classes.cell}
                 onClick={() => handleCellClick(row, col)}
                 key={col}

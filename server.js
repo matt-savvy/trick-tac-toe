@@ -27,13 +27,11 @@ let counter = 0;
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  if (counter < 2) {
-    const player = players[counter];
+    const player = players[counter % 2];
     if (player) {
       socket.emit('update', { type: 'SET_PLAYER', player });
       counter += 1;
     }
-  }
 
   socket.on('update', (action) => {
     socket.broadcast.emit('update', action);
