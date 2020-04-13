@@ -16,10 +16,6 @@ const useStyles = makeStyles({
   container: {
     margin: 50,
   },
-  grid: {
-    height: 750,
-    width: 750,
-  },
   cell: {
     fontSize: 90,
     border: '1px solid blue',
@@ -29,10 +25,7 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  grid: {
-
-  },
-}));
+});
 
 const MAKE_MOVE = 'MAKE_MOVE';
 const RESET = 'RESET';
@@ -206,6 +199,7 @@ function App() {
         {whoseTurnString}
       </Typography>
       <Grid
+        className={classes.grid}
         justify="center"
         alignItems="center"
         container
