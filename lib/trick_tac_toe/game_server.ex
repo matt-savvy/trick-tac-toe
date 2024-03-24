@@ -16,6 +16,10 @@ defmodule TrickTacToe.GameServer do
     GenServer.call(pid, {:join, player})
   end
 
+  def make_move(pid, {_player, _position} = move) do
+    GenServer.call(pid, {:make_move, move})
+  end
+
   ## server
   @impl true
   def init(_) do
@@ -35,5 +39,11 @@ defmodule TrickTacToe.GameServer do
       {:error, :player_taken} ->
         {:reply, {:error, state}, state}
     end
+  end
+
+  @impl true
+  def handle_call({:make_move, move}, _from, state) do
+    new_state = Game.make_move(state, move)
+    {:reply, new_state, new_state}
   end
 end

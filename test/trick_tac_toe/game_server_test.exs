@@ -16,5 +16,17 @@ defmodule TrickTacToe.GameServerTest do
     assert %Game{
              players: %{x: true, o: true}
            } = GameServer.get_state(pid)
+
+    GameServer.make_move(pid, {:x, :a1})
+    GameServer.make_move(pid, {:o, :b3})
+    GameServer.make_move(pid, {:x, :a2})
+    GameServer.make_move(pid, {:o, :b1})
+    GameServer.make_move(pid, {:x, :c2})
+    GameServer.make_move(pid, {:o, :c3})
+    GameServer.make_move(pid, {:x, :b2})
+
+    assert %Game{
+             status: {:winner, :x}
+           } = GameServer.get_state(pid)
   end
 end
