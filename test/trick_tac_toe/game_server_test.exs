@@ -12,4 +12,14 @@ defmodule TrickTacToe.GameServerTest do
       assert new_game == :sys.get_state(pid)
     end
   end
+
+  describe "get_state/1" do
+    test "returns state" do
+      new_game = Game.new()
+
+      pid = start_supervised!(GameServer)
+
+      assert new_game == GameServer.get_state(pid)
+    end
+  end
 end
