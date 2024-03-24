@@ -1,6 +1,7 @@
 defmodule TrickTacToe.Game do
   defstruct status: :incomplete,
-            moves: []
+            moves: [],
+            players: %{x: false, o: false}
 
   alias TrickTacToe.Board
 
@@ -9,6 +10,15 @@ defmodule TrickTacToe.Game do
   """
   def new do
     %__MODULE__{}
+  end
+
+  @doc """
+  """
+  def join(%__MODULE__{players: players} = game, player) do
+    case Map.get(players, player) do
+      false -> {:ok, %{game | players: Map.put(players, player, true)}}
+      true -> {:error, :player_taken}
+    end
   end
 
   @doc """

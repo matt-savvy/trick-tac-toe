@@ -7,8 +7,36 @@ defmodule TrickTacToe.GameTest do
     test "creates a new game" do
       assert %Game{
                moves: [],
+               players: %{x: false, o: false},
                status: :incomplete
              } = Game.new()
+    end
+  end
+
+  describe "join/2" do
+    test "join empty game" do
+      assert {:ok,
+              %Game{
+                players: %{x: true}
+              }} = Game.join(Game.new(), :x)
+    end
+
+    test "join game with room" do
+      game = %Game{players: %{x: false, o: true}}
+
+      assert {:ok,
+              %Game{
+                players: %{x: true, o: true}
+              }} =
+               Game.join(game, :x)
+
+      game = %Game{players: %{x: true, o: false}}
+
+      assert {:ok,
+              %Game{
+                players: %{x: true, o: true}
+              }} =
+               Game.join(game, :o)
     end
   end
 
