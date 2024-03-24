@@ -25,11 +25,10 @@ defmodule TrickTacToe.Game do
   """
   def get_turn(%__MODULE__{moves: []}), do: :x
 
-  def get_turn(%__MODULE__{moves: moves}) do
-    moves
-    |> List.last()
-    |> elem(0)
-    |> case do
+  def get_turn(%__MODULE__{moves: [move | _rest]}) do
+    {player, _position} = move
+
+    case player do
       :x -> :o
       :o -> :x
     end

@@ -44,9 +44,9 @@ defmodule TrickTacToe.GameTest do
     test "with last move by x" do
       game = %Game{
         moves: [
-          {:x, :a1},
+          {:x, :c3},
           {:o, :b1},
-          {:x, :c3}
+          {:x, :a1}
         ]
       }
 
@@ -56,10 +56,10 @@ defmodule TrickTacToe.GameTest do
     test "with last move by o" do
       game = %Game{
         moves: [
-          {:x, :a1},
-          {:o, :b1},
+          {:o, :b2},
           {:x, :c3},
-          {:o, :b2}
+          {:o, :b1},
+          {:x, :a1}
         ]
       }
 
