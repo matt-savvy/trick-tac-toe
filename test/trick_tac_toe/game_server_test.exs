@@ -8,5 +8,13 @@ defmodule TrickTacToe.GameServerTest do
 
     assert {:ok, pid} = GameServer.start_link(nil)
     assert new_game == GameServer.get_state(pid)
+
+    {:ok, _game} = GameServer.join(pid, :x)
+    {:ok, game} = GameServer.join(pid, :o)
+    {:error, ^game} = GameServer.join(pid, :x)
+
+    assert %Game{
+             players: %{x: true, o: true}
+           } = GameServer.get_state(pid)
   end
 end
