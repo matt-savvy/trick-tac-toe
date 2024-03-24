@@ -31,4 +31,39 @@ defmodule TrickTacToe.GameTest do
              } == Game.get_board(game)
     end
   end
+
+  describe "get_turn/1" do
+    test "with an empty board" do
+      game = %Game{
+        moves: []
+      }
+
+      assert :x == Game.get_turn(game)
+    end
+
+    test "with last move by x" do
+      game = %Game{
+        moves: [
+          {:x, :a1},
+          {:o, :b1},
+          {:x, :c3}
+        ]
+      }
+
+      assert :o == Game.get_turn(game)
+    end
+
+    test "with last move by o" do
+      game = %Game{
+        moves: [
+          {:x, :a1},
+          {:o, :b1},
+          {:x, :c3},
+          {:o, :b2}
+        ]
+      }
+
+      assert :x == Game.get_turn(game)
+    end
+  end
 end

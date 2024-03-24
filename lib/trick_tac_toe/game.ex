@@ -19,4 +19,19 @@ defmodule TrickTacToe.Game do
       %{board | position => player}
     end)
   end
+
+  @doc """
+  Returns the player whose turn it is.
+  """
+  def get_turn(%__MODULE__{moves: []}), do: :x
+
+  def get_turn(%__MODULE__{moves: moves}) do
+    moves
+    |> List.last()
+    |> elem(0)
+    |> case do
+      :x -> :o
+      :o -> :x
+    end
+  end
 end
