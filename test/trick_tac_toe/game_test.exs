@@ -66,4 +66,55 @@ defmodule TrickTacToe.GameTest do
       assert :x == Game.get_turn(game)
     end
   end
+
+  describe "make_move/2" do
+    test "when less than 5 moves" do
+      moves = [
+        {:o, :b2},
+        {:x, :c3},
+        {:o, :b1},
+        {:x, :a1}
+      ]
+
+      assert %Game{
+               moves: [{:x, :b3} | ^moves]
+             } =
+               Game.make_move(%Game{moves: moves}, {:x, :b3})
+    end
+
+    test "when 5 moves" do
+      moves = [
+        {:x, :b3},
+        {:o, :b2},
+        {:x, :c3},
+        {:o, :b1},
+        {:x, :a1}
+      ]
+
+      assert %Game{
+               moves: [
+                 {:o, :a1},
+                 {:x, :b3},
+                 {:o, :b2},
+                 {:x, :c3},
+                 {:o, :b1}
+               ]
+             } =
+               Game.make_move(%Game{moves: moves}, {:o, :a1})
+    end
+
+    test "when move finishes game" do
+      moves = [
+        {:o, :b2},
+        {:x, :a2},
+        {:o, :b1},
+        {:x, :a1}
+      ]
+
+      assert %Game{
+               moves: [{:x, :a3} | ^moves],
+               status: {:winner, :x}
+             } = Game.make_move(%Game{moves: moves}, {:x, :a3})
+    end
+  end
 end

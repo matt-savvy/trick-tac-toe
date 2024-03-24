@@ -33,4 +33,23 @@ defmodule TrickTacToe.Game do
       :o -> :x
     end
   end
+
+  @doc """
+  Makes a move.
+  """
+  def make_move(%__MODULE__{moves: moves} = game, {_player, _position} = move) do
+    updated_game = %{game | moves: [move | moves]}
+
+    updated_game
+    |> get_board()
+    |> Board.result()
+    |> case do
+      :incomplete -> drop_move(updated_game)
+      result -> %{updated_game | status: result}
+    end
+  end
+
+  defp drop_move(%__MODULE__{moves: moves} = game) do
+    %{game | moves: Enum.take(moves, 5)}
+  end
 end
