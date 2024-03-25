@@ -8,7 +8,8 @@ defmodule TrickTacToe.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Registry, keys: :unique, name: TrickTacToe.Registry}
+      {Registry, keys: :unique, name: TrickTacToe.Registry},
+      TrickTacToe.GameSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

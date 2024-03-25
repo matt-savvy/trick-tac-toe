@@ -8,6 +8,10 @@ defmodule TrickTacToe.GameServer do
     GenServer.start_link(__MODULE__, id, name: name(id))
   end
 
+  def get_state(pid) when is_pid(pid) do
+    GenServer.call(pid, :get_state)
+  end
+
   def get_state(id) do
     id
     |> name
