@@ -8,8 +8,7 @@ defmodule TrickTacToe.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: TrickTacToe.Worker.start_link(arg)
-      # {TrickTacToe.Worker, arg}
+      {Registry, keys: :unique, name: TrickTacToe.Registry}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
