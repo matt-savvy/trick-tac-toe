@@ -5,28 +5,30 @@ defmodule TrickTacToe.GameServerTest do
 
   test "integration test" do
     new_game = Game.new()
+    id = 2
+    assert {:ok, pid} = GameServer.start_link(id)
+    assert is_pid(pid)
 
-    assert {:ok, pid} = GameServer.start_link(nil)
-    assert new_game == GameServer.get_state(pid)
+    assert new_game == GameServer.get_state(id)
 
-    {:ok, _game} = GameServer.join(pid, :x)
-    {:ok, game} = GameServer.join(pid, :o)
-    {:error, ^game} = GameServer.join(pid, :x)
+    {:ok, _game} = GameServer.join(id, :x)
+    {:ok, game} = GameServer.join(id, :o)
+    {:error, ^game} = GameServer.join(id, :x)
 
     assert %Game{
              players: %{x: true, o: true}
-           } = GameServer.get_state(pid)
+           } = GameServer.get_state(id)
 
-    GameServer.make_move(pid, {:x, :a1})
-    GameServer.make_move(pid, {:o, :b3})
-    GameServer.make_move(pid, {:x, :a2})
-    GameServer.make_move(pid, {:o, :b1})
-    GameServer.make_move(pid, {:x, :c2})
-    GameServer.make_move(pid, {:o, :c3})
-    GameServer.make_move(pid, {:x, :b2})
+    GameServer.make_move(id, {:x, :a1})
+    GameServer.make_move(id, {:o, :b3})
+    GameServer.make_move(id, {:x, :a2})
+    GameServer.make_move(id, {:o, :b1})
+    GameServer.make_move(id, {:x, :c2})
+    GameServer.make_move(id, {:o, :c3})
+    GameServer.make_move(id, {:x, :b2})
 
     assert %Game{
              status: {:winner, :x}
-           } = GameServer.get_state(pid)
+           } = GameServer.get_state(id)
   end
 end

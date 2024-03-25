@@ -4,20 +4,30 @@ defmodule TrickTacToe.GameServer do
   alias TrickTacToe.Game
 
   ## client
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil)
+  def start_link(id) do
+    GenServer.start_link(__MODULE__, id, name: name(id))
   end
 
-  def get_state(pid) do
-    GenServer.call(pid, :get_state)
+  def get_state(id) do
+    id
+    |> name
+    |> GenServer.call(:get_state)
   end
 
-  def join(pid, player) do
-    GenServer.call(pid, {:join, player})
+  def join(id, player) do
+    id
+    |> name
+    |> GenServer.call({:join, player})
   end
 
-  def make_move(pid, {_player, _position} = move) do
-    GenServer.call(pid, {:make_move, move})
+  def make_move(id, {_player, _position} = move) do
+    id
+    |> name
+    |> GenServer.call({:make_move, move})
+  end
+
+  def name(id) do
+    {:via, Registry, {TrickTacToe.Registry, id}}
   end
 
   ## server
