@@ -8,13 +8,26 @@ defmodule TrickTacToe.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      TrickTacToeWeb.Telemetry,
+      {DNSCluster, query: Application.get_env(:trick_tac_toe, :dns_cluster_query) || :ignore},
+      {Phoenix.PubSub, name: TrickTacToe.PubSub},
       {Registry, keys: :unique, name: TrickTacToe.Registry},
-      TrickTacToe.GameSupervisor
+      TrickTacToe.GameSupervisor,
+      # Start to serve requests, typically the last entry
+      TrickTacToeWeb.Endpoint,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: TrickTacToe.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  # Tell Phoenix to update the endpoint configuration
+  # whenever the application is updated.
+  @impl true
+  def config_change(changed, _new, removed) do
+    TrickTacToeWeb.Endpoint.config_change(changed, removed)
+    :ok
   end
 end
