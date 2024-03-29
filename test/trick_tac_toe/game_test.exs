@@ -98,16 +98,15 @@ defmodule TrickTacToe.GameTest do
   describe "make_move/2" do
     test "when less than 5 moves" do
       moves = [
-        {:o, :b2},
         {:x, :c3},
         {:o, :b1},
         {:x, :a1}
       ]
 
       assert %Game{
-               moves: [{:x, :b3} | ^moves]
+               moves: [{:o, :b3} | ^moves]
              } =
-               Game.make_move(%Game{moves: moves}, {:x, :b3})
+               Game.make_move(%Game{moves: moves}, {:o, :b3})
     end
 
     test "when 5 moves" do
@@ -124,8 +123,7 @@ defmodule TrickTacToe.GameTest do
                  {:o, :a1},
                  {:x, :b3},
                  {:o, :b2},
-                 {:x, :c3},
-                 {:o, :b1}
+                 {:x, :c3}
                ]
              } =
                Game.make_move(%Game{moves: moves}, {:o, :a1})

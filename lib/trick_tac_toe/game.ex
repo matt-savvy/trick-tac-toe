@@ -60,6 +60,6 @@ defmodule TrickTacToe.Game do
   end
 
   defp drop_move(%__MODULE__{moves: moves} = game) do
-    %{game | moves: Enum.take(moves, 5)}
+    %{game | moves: Enum.take(moves, 4)}
   end
 end
