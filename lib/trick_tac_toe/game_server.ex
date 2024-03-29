@@ -13,9 +13,10 @@ defmodule TrickTacToe.GameServer do
   end
 
   def get_state(id) do
-    id
-    |> name
-    |> GenServer.call(:get_state)
+    case GenServer.whereis(name(id)) do
+      nil -> {:error, :not_found}
+      pid -> {:ok, GenServer.call(pid, :get_state)}
+    end
   end
 
   def join(id, player) do

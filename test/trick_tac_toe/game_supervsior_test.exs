@@ -13,9 +13,9 @@ defmodule TrickTacToe.GameSupervisorTest do
     {:ok, _game_3} = GameServer.join(game_3_id, :x)
     {:ok, game_3} = GameServer.join(game_3_id, :o)
 
-    assert ^game_1 = GameServer.get_state(game_1_id)
-    assert ^game_2 = GameServer.get_state(game_2_id)
-    assert ^game_3 = GameServer.get_state(game_3_id)
+    assert {:ok, ^game_1} = GameServer.get_state(game_1_id)
+    assert {:ok, ^game_2} = GameServer.get_state(game_2_id)
+    assert {:ok, ^game_3} = GameServer.get_state(game_3_id)
 
     assert [
              {:undefined, game_1_pid, :worker, [GameServer]},
@@ -28,6 +28,6 @@ defmodule TrickTacToe.GameSupervisorTest do
     assert Process.alive?(game_2_pid)
     assert Process.alive?(game_3_pid)
     Process.sleep(50)
-    assert %Game{} = GameServer.get_state(game_1_id)
+    assert {:ok, %Game{}} = GameServer.get_state(game_1_id)
   end
 end
