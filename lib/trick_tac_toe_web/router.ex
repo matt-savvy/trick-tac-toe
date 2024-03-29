@@ -17,8 +17,8 @@ defmodule TrickTacToeWeb.Router do
   scope "/", TrickTacToeWeb do
     pipe_through :browser
 
-    live "/", GameLive
-    # live "/:id", TrickTacToeWeb.GameLive, :existing
+    live "/", GameLive, :new
+    live "/:id", GameLive, :existing
   end
 
   # Other scopes may use custom stacks.

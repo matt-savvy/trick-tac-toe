@@ -13,14 +13,19 @@ defmodule TrickTacToeWeb.GameLive do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, _action, _params) do
+  defp apply_action(socket, :new, _params) do
     with {:ok, _game, game_id} <- GameSupervisor.new_game(),
          {:ok, _game} <- GameServer.join(game_id, :x),
-         {:ok, game} <- GameServer.join(game_id, :o) do
-      socket
-      |> assign(:game_id, game_id)
-      |> assign_game(game)
+         {:ok, _game} <- GameServer.join(game_id, :o) do
+      socket |> push_redirect(to: ~p"/#{game_id}")
     end
+  end
+
+  defp apply_action(socket, :existing, %{"id" => id}) do
+    id = String.to_integer(id)
+
+    game = GameServer.get_state(id)
+    socket |> assign(:game_id, id) |> assign_game(game)
   end
 
   defp assign_game(socket, game) do
