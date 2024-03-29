@@ -24,8 +24,13 @@ defmodule TrickTacToeWeb.GameLive do
   defp apply_action(socket, :existing, %{"id" => id}) do
     id = String.to_integer(id)
 
-    {:ok, game} = GameServer.get_state(id)
-    socket |> assign(:game_id, id) |> assign_game(game)
+    case GameServer.get_state(id) do
+      {:ok, game} ->
+        socket |> assign(:game_id, id) |> assign_game(game)
+
+      {:error, :not_found} ->
+        raise TrickTacToeWeb.NotFound
+    end
   end
 
   defp assign_game(socket, game) do
