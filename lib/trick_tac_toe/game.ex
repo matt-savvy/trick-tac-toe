@@ -22,6 +22,15 @@ defmodule TrickTacToe.Game do
   end
 
   @doc """
+  Lists available players.
+  """
+  def available_players(%__MODULE__{players: players}) do
+    players
+    |> Map.reject(fn {_k, v} -> v end)
+    |> Map.keys()
+  end
+
+  @doc """
   Creates a Board from the moves.
   """
   def get_board(%__MODULE__{moves: moves}) do

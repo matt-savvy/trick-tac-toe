@@ -40,6 +40,23 @@ defmodule TrickTacToe.GameTest do
     end
   end
 
+  describe "available_players/1" do
+    test "with x available" do
+      game = %Game{players: %{x: false}}
+      assert :x in Game.available_players(game)
+    end
+
+    test "with o available" do
+      game = %Game{players: %{o: false}}
+      assert :o in Game.available_players(game)
+    end
+
+    test "with neither available" do
+      game = %Game{players: %{o: true, x: true}}
+      assert [] == Game.available_players(game)
+    end
+  end
+
   describe "get_board/1" do
     test "reduces moves" do
       game = %Game{
