@@ -15,9 +15,7 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   defp apply_action(socket, :new, _params) do
-    with {:ok, _game, game_id} <- GameSupervisor.new_game(),
-         {:ok, _game} <- GameServer.join(game_id, :x),
-         {:ok, _game} <- GameServer.join(game_id, :o) do
+    with {:ok, _game, game_id} <- GameSupervisor.new_game() do
       socket |> push_redirect(to: ~p"/#{game_id}")
     end
   end
@@ -28,7 +26,11 @@ defmodule TrickTacToeWeb.GameLive do
     case GameServer.get_state(id) do
       {:ok, game} ->
         :ok = PubSub.subscribe(TrickTacToe.PubSub, "game:#{id}")
-        socket |> assign(:game_id, id) |> assign_game(game)
+
+        socket
+        |> assign(:game_id, id)
+        |> assign(:player, nil)
+        |> assign_game(game)
 
       {:error, :not_found} ->
         raise TrickTacToeWeb.NotFound
@@ -39,7 +41,21 @@ defmodule TrickTacToeWeb.GameLive do
     socket
     |> assign(:game, game)
     |> assign(:board, Game.get_board(game))
-    |> assign(:player, Game.get_turn(game))
+  end
+
+  @impl true
+  def handle_event("join", %{"player" => player}, socket) do
+    player = String.to_existing_atom(player)
+    game_id = socket.assigns.game_id
+
+    case GameServer.join(game_id, player) do
+      {:ok, game} ->
+        {:noreply, socket |> assign_game(game) |> assign(:player, player)}
+
+      {:error, :player_taken} ->
+        game = GameServer.get_state(game_id)
+        {:noreply, socket |> assign_game(game) |> put_flash(:error, "That player was taken")}
+    end
   end
 
   @impl true
@@ -59,21 +75,31 @@ defmodule TrickTacToeWeb.GameLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <h1 :if={@game.status == :incomplete}>It is player <%= @player %>'s turn.</h1>
-    <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
-    <div class="grid grid-cols-3 grid-rows-3 gap-12">
-      <div
-        :for={{position, player} <- positions(@board)}
-        class="border-solid border-2 border-sky-500 h-40 min-w-1"
-      >
-        <.link
-          :if={is_nil(player) and @game.status == :incomplete}
-          phx-click="move"
-          phx-value-position={position}
+    <div :for={player <- Game.available_players(@game)}>
+      <.link phx-click="join" phx-value-player={player}>
+        Join game as <%= player %>.
+      </.link>
+    </div>
+
+    <h1 :if={not is_nil(@player)}>You have joined the game as <%= @player %></h1>
+
+    <div :if={Game.available_players(@game) == []}>
+      <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
+      <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
+      <div class="grid grid-cols-3 grid-rows-3 gap-12">
+        <div
+          :for={{position, player} <- positions(@board)}
+          class="border-solid border-2 border-sky-500 h-40 min-w-1"
         >
-          move here
-        </.link>
-        <%= player %>
+          <.link
+            :if={is_nil(player) and @game.status == :incomplete and Game.get_turn(@game) == @player}
+            phx-click="move"
+            phx-value-position={position}
+          >
+            move here
+          </.link>
+          <%= player %>
+        </div>
       </div>
     </div>
     """
