@@ -1,15 +1,18 @@
 defmodule TrickTacToe.Game do
-  defstruct status: :incomplete,
-            moves: [],
-            players: %{x: false, o: false}
+  defstruct [
+    :id,
+    status: :incomplete,
+    moves: [],
+    players: %{x: false, o: false}
+  ]
 
   alias TrickTacToe.Board
 
   @doc """
   Creates a new game.
   """
-  def new do
-    %__MODULE__{}
+  def new(id) do
+    %__MODULE__{id: id}
   end
 
   @doc """

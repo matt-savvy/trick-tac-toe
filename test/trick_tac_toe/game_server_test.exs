@@ -4,8 +4,8 @@ defmodule TrickTacToe.GameServerTest do
   alias TrickTacToe.{Game, GameServer}
 
   test "integration test" do
-    new_game = Game.new()
     id = 2
+    new_game = Game.new(id)
     assert {:ok, pid} = GameServer.start_link(id)
     assert is_pid(pid)
 

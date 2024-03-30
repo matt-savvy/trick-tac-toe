@@ -3,13 +3,14 @@ defmodule TrickTacToe.GameTest do
 
   alias TrickTacToe.{Board, Game}
 
-  describe "new/0" do
+  describe "new/1" do
     test "creates a new game" do
       assert %Game{
+               id: 1,
                moves: [],
                players: %{x: false, o: false},
                status: :incomplete
-             } = Game.new()
+             } = Game.new(1)
     end
   end
 
@@ -18,7 +19,7 @@ defmodule TrickTacToe.GameTest do
       assert {:ok,
               %Game{
                 players: %{x: true}
-              }} = Game.join(Game.new(), :x)
+              }} = Game.join(Game.new(1), :x)
     end
 
     test "join game with room" do

@@ -37,8 +37,8 @@ defmodule TrickTacToe.GameServer do
 
   ## server
   @impl true
-  def init(_) do
-    {:ok, Game.new()}
+  def init(id) do
+    {:ok, Game.new(id)}
   end
 
   @impl true
