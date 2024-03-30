@@ -2,7 +2,6 @@ defmodule TrickTacToeWeb.GameLive do
   use TrickTacToeWeb, :live_view
 
   alias TrickTacToe.{Board, Game, GameServer, GameSupervisor}
-  alias Phoenix.PubSub
 
   @impl true
   def mount(_params, _session, socket) do
@@ -25,7 +24,7 @@ defmodule TrickTacToeWeb.GameLive do
 
     case GameServer.get_state(id) do
       {:ok, game} ->
-        :ok = PubSub.subscribe(TrickTacToe.PubSub, "game:#{id}")
+        :ok = GameServer.subscribe(game)
 
         socket
         |> assign(:game_id, id)

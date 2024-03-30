@@ -41,7 +41,11 @@ defmodule TrickTacToe.GameServer do
     PubSub.broadcast!(TrickTacToe.PubSub, topic(game), {:update, game})
   end
 
-  def topic(%Game{id: id}) do
+  def subscribe(%Game{} = game) do
+    :ok = PubSub.subscribe(TrickTacToe.PubSub, topic(game))
+  end
+
+  defp topic(%Game{id: id}) do
     "game:#{id}"
   end
 
