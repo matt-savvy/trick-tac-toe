@@ -16,6 +16,7 @@ defmodule TrickTacToe.Game do
   end
 
   @doc """
+  Joins game as player, if possible.
   """
   def join(%__MODULE__{players: players} = game, player) do
     case Map.get(players, player) do

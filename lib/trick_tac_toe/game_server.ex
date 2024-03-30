@@ -6,10 +6,17 @@ defmodule TrickTacToe.GameServer do
   alias Phoenix.PubSub
 
   ## client
+
+  @doc """
+  Starts a GameServer process linked to the current process.
+  """
   def start_link(id) do
     GenServer.start_link(__MODULE__, id, name: name(id))
   end
 
+  @doc """
+  Returns the state of the GameServer for the given pid or id.
+  """
   def get_state(pid) when is_pid(pid) do
     GenServer.call(pid, :get_state)
   end
@@ -21,26 +28,43 @@ defmodule TrickTacToe.GameServer do
     end
   end
 
+  @doc """
+  Joins game as player and updates GameServer state.
+  """
   def join(id, player) do
     id
     |> name
     |> GenServer.call({:join, player})
   end
 
+  @doc """
+  Makes a move and updates GameServer state.
+  """
   def make_move(id, {_player, _position} = move) do
     id
     |> name
     |> GenServer.call({:make_move, move})
   end
 
+  @doc """
+  Gets the GameServer name from an id. Can be used to send
+  messages to the GameServer.
+  """
   def name(id) do
     {:via, Registry, {TrickTacToe.Registry, id}}
   end
 
+  @doc """
+  Broadcasts an :update message on the topic for the game, with
+  the current state.
+  """
   def broadcast_update!(%Game{} = game) do
     PubSub.broadcast!(TrickTacToe.PubSub, topic(game), {:update, game})
   end
 
+  @doc """
+  Subscribes the caller process to the topic for the game.
+  """
   def subscribe(%Game{} = game) do
     :ok = PubSub.subscribe(TrickTacToe.PubSub, topic(game))
   end
