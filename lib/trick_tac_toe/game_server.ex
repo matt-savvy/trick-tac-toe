@@ -81,17 +81,17 @@ defmodule TrickTacToe.GameServer do
 
   @impl true
   def handle_call(:get_state, _from, state) do
-    {:reply, state, state}
+    reply_success(state, state)
   end
 
   @impl true
   def handle_call({:join, player}, _from, state) do
     with {:ok, game} <- Game.join(state, player) do
       broadcast_update!(game)
-      {:reply, {:ok, game}, game}
+      reply_success({:ok, game}, game)
     else
       {:error, :player_taken} ->
-        {:reply, {:error, state}, state}
+        reply_success({:error, state}, state)
     end
   end
 
@@ -99,6 +99,10 @@ defmodule TrickTacToe.GameServer do
   def handle_call({:make_move, move}, _from, state) do
     new_state = Game.make_move(state, move)
     broadcast_update!(new_state)
-    {:reply, new_state, new_state}
+    reply_success(new_state, new_state)
+  end
+
+  defp reply_success(reply, state) do
+    {:reply, reply, state}
   end
 end
