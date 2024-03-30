@@ -2,6 +2,7 @@ defmodule TrickTacToeWeb.GameLive do
   use TrickTacToeWeb, :live_view
 
   alias TrickTacToe.{Board, Game, GameServer, GameSupervisor}
+  alias Phoenix.PubSub
 
   @impl true
   def mount(_params, _session, socket) do
@@ -26,6 +27,7 @@ defmodule TrickTacToeWeb.GameLive do
 
     case GameServer.get_state(id) do
       {:ok, game} ->
+        :ok = PubSub.subscribe(TrickTacToe.PubSub, "game:#{id}")
         socket |> assign(:game_id, id) |> assign_game(game)
 
       {:error, :not_found} ->
@@ -46,6 +48,11 @@ defmodule TrickTacToeWeb.GameLive do
     move = {socket.assigns.player, position}
     game = GameServer.make_move(socket.assigns.game_id, move)
 
+    {:noreply, socket |> assign_game(game)}
+  end
+
+  @impl true
+  def handle_info({:update, game}, socket) do
     {:noreply, socket |> assign_game(game)}
   end
 
