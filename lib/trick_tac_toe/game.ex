@@ -67,8 +67,11 @@ defmodule TrickTacToe.Game do
     |> get_board()
     |> Board.result()
     |> case do
-      :incomplete -> drop_move(updated_game)
-      result -> %{updated_game | status: result}
+      :incomplete ->
+        {:ok, drop_move(updated_game)}
+
+      result ->
+        {:ok, %{updated_game | status: result}}
     end
   end
 

@@ -97,7 +97,7 @@ defmodule TrickTacToe.GameServer do
 
   @impl true
   def handle_call({:make_move, move}, _from, state) do
-    new_state = Game.make_move(state, move)
+    {:ok, new_state} = Game.make_move(state, move)
     broadcast_update!(new_state)
     reply_success(new_state, new_state)
   end
