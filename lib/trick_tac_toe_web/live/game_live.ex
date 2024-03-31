@@ -61,9 +61,13 @@ defmodule TrickTacToeWeb.GameLive do
   def handle_event("move", %{"position" => position}, socket) do
     position = String.to_atom(position)
     move = {socket.assigns.player, position}
-    game = GameServer.make_move(socket.assigns.game_id, move)
 
-    {:noreply, socket |> assign_game(game)}
+    with {:ok, game} <- GameServer.make_move(socket.assigns.game_id, move) do
+      {:noreply, socket |> assign_game(game)}
+    else
+      {:error, _error} ->
+        {:noreply, socket}
+    end
   end
 
   @impl true

@@ -20,15 +20,18 @@ defmodule TrickTacToe.GameServerTest do
               players: %{x: true, o: true}
             }} = GameServer.get_state(id)
 
-    GameServer.make_move(id, {:x, :a1})
-    GameServer.make_move(id, {:o, :b3})
-    GameServer.make_move(id, {:x, :a2})
-    GameServer.make_move(id, {:o, :b1})
-    GameServer.make_move(id, {:x, :c2})
-    GameServer.make_move(id, {:o, :c3})
-    GameServer.make_move(id, {:x, :b2})
-    GameServer.make_move(id, {:x, :b3})
-    GameServer.make_move(id, {:o, :b2})
+    {:ok, _game} = GameServer.make_move(id, {:x, :a1})
+    # invalid move, wrong player
+    {:error, :wrong_player} = GameServer.make_move(id, {:x, :a2})
+    # invalid move, position taken
+    {:error, :position_taken} = GameServer.make_move(id, {:o, :a1})
+    {:ok, _game} = GameServer.make_move(id, {:o, :b3})
+    {:ok, _game} = GameServer.make_move(id, {:x, :a2})
+    {:ok, _game} = GameServer.make_move(id, {:o, :b1})
+    {:ok, _game} = GameServer.make_move(id, {:x, :c2})
+    {:ok, _game} = GameServer.make_move(id, {:o, :c3})
+    {:ok, _game} = GameServer.make_move(id, {:x, :b2})
+    {:error, :game_over} = GameServer.make_move(id, {:o, :a3})
 
     assert {:ok,
             %Game{
