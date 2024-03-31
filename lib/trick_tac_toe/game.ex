@@ -83,15 +83,19 @@ defmodule TrickTacToe.Game do
     %{game | moves: Enum.take(moves, 4)}
   end
 
-  defp check_legal_move(%__MODULE__{} = game, {_player, position}) do
+  defp check_legal_move(%__MODULE__{} = game, {player, position}) do
     position_available =
       game
       |> get_board()
       |> Map.get(position)
       |> is_nil()
 
+    correct_player =
+      get_turn(game) == player
+
     cond do
       !position_available -> :position_taken
+      !correct_player -> :wrong_player
       true -> :ok
     end
   end

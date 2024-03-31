@@ -173,5 +173,15 @@ defmodule TrickTacToe.GameTest do
 
       assert {:error, :position_taken} = Game.make_move(%Game{moves: moves}, {:x, :a1})
     end
+
+    test "when not player's turn" do
+      moves = [
+        {:x, :a2},
+        {:o, :b1},
+        {:x, :a1}
+      ]
+
+      assert {:error, :wrong_player} = Game.make_move(%Game{moves: moves}, {:x, :a3})
+    end
   end
 end
