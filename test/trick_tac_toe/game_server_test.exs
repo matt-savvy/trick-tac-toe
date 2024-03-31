@@ -27,6 +27,8 @@ defmodule TrickTacToe.GameServerTest do
     GameServer.make_move(id, {:x, :c2})
     GameServer.make_move(id, {:o, :c3})
     GameServer.make_move(id, {:x, :b2})
+    GameServer.make_move(id, {:x, :b3})
+    GameServer.make_move(id, {:o, :b2})
 
     assert {:ok,
             %Game{
