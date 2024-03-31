@@ -50,7 +50,7 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   @impl true
-  def handle_event("join", %{"player" => player}, socket) do
+  def handle_event("join", %{"player" => player}, %{assigns: %{player: nil}} = socket) do
     player = String.to_existing_atom(player)
     game_id = socket.assigns.game_id
 
@@ -61,6 +61,11 @@ defmodule TrickTacToeWeb.GameLive do
       {:error, _error} ->
         {:noreply, socket |> assign_error(:player_taken)}
     end
+  end
+
+  @impl true
+  def handle_event("join", _params, socket) do
+    {:noreply, socket |> assign_error(:player_selected)}
   end
 
   @impl true
@@ -125,6 +130,7 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   defp error_string(:player_taken), do: "That player is already taken!"
+  defp error_string(:player_selected), do: "You have already selected a player!"
   defp error_string(:wrong_player), do: "It's not your turn!"
   defp error_string(:position_taken), do: "That position is taken!"
   defp error_string(:game_over), do: "The game is over!"
