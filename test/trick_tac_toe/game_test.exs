@@ -183,5 +183,20 @@ defmodule TrickTacToe.GameTest do
 
       assert {:error, :wrong_player} = Game.make_move(%Game{moves: moves}, {:x, :a3})
     end
+
+    test "when game already finished" do
+      game = %Game{
+        status: {:winner, :x},
+        moves: [
+          {:x, :a3},
+          {:o, :b2},
+          {:x, :a2},
+          {:o, :b1},
+          {:x, :a1}
+        ]
+      }
+
+      assert {:error, :game_over} = Game.make_move(game, {:o, :b3})
+    end
   end
 end
