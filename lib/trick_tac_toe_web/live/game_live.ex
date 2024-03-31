@@ -89,7 +89,7 @@ defmodule TrickTacToeWeb.GameLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div :for={player <- Game.available_players(@game)}>
+    <div :for={player <- Game.available_players(@game)} :if={is_nil(@player)}>
       <.link phx-click="join" phx-value-player={player}>
         Join game as <%= player %>.
       </.link>
