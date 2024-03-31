@@ -14,7 +14,7 @@ defmodule TrickTacToe.Application do
       {Registry, keys: :unique, name: TrickTacToe.Registry},
       TrickTacToe.GameSupervisor,
       # Start to serve requests, typically the last entry
-      TrickTacToeWeb.Endpoint,
+      TrickTacToeWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
