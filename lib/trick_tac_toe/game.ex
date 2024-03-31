@@ -61,21 +61,38 @@ defmodule TrickTacToe.Game do
   Makes a move.
   """
   def make_move(%__MODULE__{moves: moves} = game, {_player, _position} = move) do
-    updated_game = %{game | moves: [move | moves]}
+    with :ok <- check_legal_move(game, move) do
+      updated_game = %{game | moves: [move | moves]}
 
-    updated_game
-    |> get_board()
-    |> Board.result()
-    |> case do
-      :incomplete ->
-        {:ok, drop_move(updated_game)}
+      updated_game
+      |> get_board()
+      |> Board.result()
+      |> case do
+        :incomplete ->
+          {:ok, drop_move(updated_game)}
 
-      result ->
-        {:ok, %{updated_game | status: result}}
+        result ->
+          {:ok, %{updated_game | status: result}}
+      end
+    else
+      error -> {:error, error}
     end
   end
 
   defp drop_move(%__MODULE__{moves: moves} = game) do
     %{game | moves: Enum.take(moves, 4)}
+  end
+
+  defp check_legal_move(%__MODULE__{} = game, {_player, position}) do
+    position_available =
+      game
+      |> get_board()
+      |> Map.get(position)
+      |> is_nil()
+
+    cond do
+      !position_available -> :position_taken
+      true -> :ok
+    end
   end
 end

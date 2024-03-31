@@ -130,7 +130,6 @@ defmodule TrickTacToe.GameTest do
 
     test "when 5 moves" do
       moves = [
-        {:x, :b3},
         {:o, :b2},
         {:x, :c3},
         {:o, :b1},
@@ -140,13 +139,13 @@ defmodule TrickTacToe.GameTest do
       assert {:ok,
               %Game{
                 moves: [
-                  {:o, :a1},
-                  {:x, :b3},
+                  {:x, :c2},
                   {:o, :b2},
-                  {:x, :c3}
+                  {:x, :c3},
+                  {:o, :b1}
                 ]
               }} =
-               Game.make_move(%Game{moves: moves}, {:o, :a1})
+               Game.make_move(%Game{moves: moves}, {:x, :c2})
     end
 
     test "when move finishes game" do
@@ -162,6 +161,17 @@ defmodule TrickTacToe.GameTest do
                 moves: [{:x, :a3} | ^moves],
                 status: {:winner, :x}
               }} = Game.make_move(%Game{moves: moves}, {:x, :a3})
+    end
+
+    test "when position is taken" do
+      moves = [
+        {:o, :b2},
+        {:x, :a2},
+        {:o, :b1},
+        {:x, :a1}
+      ]
+
+      assert {:error, :position_taken} = Game.make_move(%Game{moves: moves}, {:x, :a1})
     end
   end
 end
