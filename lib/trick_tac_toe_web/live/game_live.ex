@@ -42,6 +42,13 @@ defmodule TrickTacToeWeb.GameLive do
     |> assign(:board, Game.get_board(game))
   end
 
+  defp assign_error(socket, error) do
+    case GameServer.get_state(socket.assigns.game_id) do
+      {:ok, game} -> socket |> assign_game(game) |> put_flash(:error, error_string(error))
+      {:error, :not_found} -> socket
+    end
+  end
+
   @impl true
   def handle_event("join", %{"player" => player}, socket) do
     player = String.to_existing_atom(player)
@@ -51,9 +58,8 @@ defmodule TrickTacToeWeb.GameLive do
       {:ok, game} ->
         {:noreply, socket |> assign_game(game) |> assign(:player, player)}
 
-      {:error, :player_taken} ->
-        game = GameServer.get_state(game_id)
-        {:noreply, socket |> assign_game(game) |> put_flash(:error, "That player was taken")}
+      {:error, _error} ->
+        {:noreply, socket |> assign_error(:player_taken)}
     end
   end
 
@@ -65,8 +71,8 @@ defmodule TrickTacToeWeb.GameLive do
     with {:ok, game} <- GameServer.make_move(socket.assigns.game_id, move) do
       {:noreply, socket |> assign_game(game)}
     else
-      {:error, _error} ->
-        {:noreply, socket}
+      {:error, error} ->
+        {:noreply, socket |> assign_error(error)}
     end
   end
 
@@ -117,4 +123,9 @@ defmodule TrickTacToeWeb.GameLive do
     |> Map.from_struct()
     |> Map.to_list()
   end
+
+  defp error_string(:player_taken), do: "That player is already taken!"
+  defp error_string(:wrong_player), do: "It's not your turn!"
+  defp error_string(:position_taken), do: "That position is taken!"
+  defp error_string(:game_over), do: "The game is over!"
 end
