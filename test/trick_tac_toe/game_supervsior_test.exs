@@ -23,7 +23,7 @@ defmodule TrickTacToe.GameSupervisorTest do
              {:undefined, game_3_pid, :worker, [GameServer]}
            ] = DynamicSupervisor.which_children(GameSupervisor)
 
-    Process.exit(game_1_pid, :kill)
+    assert true = Process.exit(game_1_pid, :kill)
     refute Process.alive?(game_1_pid)
     assert Process.alive?(game_2_pid)
     assert Process.alive?(game_3_pid)
