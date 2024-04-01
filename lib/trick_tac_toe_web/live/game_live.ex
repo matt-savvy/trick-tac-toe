@@ -26,6 +26,12 @@ defmodule TrickTacToeWeb.GameLive do
       {:ok, game} ->
         :ok = GameServer.subscribe(game)
 
+        _ref =
+          id
+          |> GameServer.name()
+          |> GenServer.whereis()
+          |> Process.monitor()
+
         socket
         |> assign(:game_id, id)
         |> assign(:player, nil)
@@ -84,6 +90,11 @@ defmodule TrickTacToeWeb.GameLive do
   @impl true
   def handle_info({:update, game}, socket) do
     {:noreply, socket |> assign_game(game)}
+  end
+
+  @impl true
+  def handle_info({:DOWN, _ref, :process, _pid, {:shutdown, :timeout}}, socket) do
+    {:noreply, socket |> put_flash(:error, "The game has been closed due to inactivity.")}
   end
 
   @impl true
