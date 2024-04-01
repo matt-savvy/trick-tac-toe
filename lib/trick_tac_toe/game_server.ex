@@ -5,6 +5,8 @@ defmodule TrickTacToe.GameServer do
 
   alias Phoenix.PubSub
 
+  @timeout 60 * 60 * 1000
+
   ## client
 
   @doc """
@@ -106,7 +108,16 @@ defmodule TrickTacToe.GameServer do
     end
   end
 
+  @impl true
+  def handle_info(:timeout, state) do
+    {:stop, {:shutdown, :timeout}, state}
+  end
+
   defp reply_success(reply, state) do
-    {:reply, reply, state}
+    {:reply, reply, state, timeout()}
+  end
+
+  defp timeout do
+    Application.get_env(TrickTacToe, :timeout, @timeout)
   end
 end
