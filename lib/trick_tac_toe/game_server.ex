@@ -1,5 +1,5 @@
 defmodule TrickTacToe.GameServer do
-  use GenServer
+  use GenServer, restart: :transient
 
   alias TrickTacToe.Game
 
