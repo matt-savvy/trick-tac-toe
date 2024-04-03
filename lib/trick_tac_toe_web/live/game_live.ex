@@ -36,6 +36,13 @@ defmodule TrickTacToeWeb.GameLive do
         |> assign(:game_id, id)
         |> assign(:player, nil)
         |> assign_game(game)
+        |> then(fn socket ->
+          if connected?(socket) do
+            push_event(socket, "restore", %{key: id})
+          else
+            socket
+          end
+        end)
 
       {:error, :not_found} ->
         raise TrickTacToeWeb.NotFound
@@ -62,7 +69,11 @@ defmodule TrickTacToeWeb.GameLive do
 
     case GameServer.join(game_id, player) do
       {:ok, game} ->
-        {:noreply, socket |> assign_game(game) |> assign(:player, player)}
+        {:noreply,
+         socket
+         |> assign_game(game)
+         |> assign(:player, player)
+         |> push_event("store", %{key: game_id, data: player})}
 
       {:error, _error} ->
         {:noreply, socket |> assign_error(:player_taken)}
@@ -88,6 +99,18 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   @impl true
+  def handle_event("restore-player", data, socket) do
+    case data do
+      %{"player" => player_string} ->
+        player = String.to_existing_atom(player_string)
+        {:noreply, socket |> assign(:player, player)}
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_info({:update, game}, socket) do
     {:noreply, socket |> assign_game(game)}
   end
@@ -100,30 +123,32 @@ defmodule TrickTacToeWeb.GameLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div :for={player <- Game.available_players(@game)} :if={is_nil(@player)}>
-      <.link phx-click="join" phx-value-player={player}>
-        Join game as <%= player %>.
-      </.link>
-    </div>
+    <div id="game" phx-hook="LocalStateStore">
+      <div :for={player <- Game.available_players(@game)} :if={is_nil(@player)}>
+        <.link phx-click="join" phx-value-player={player}>
+          Join game as <%= player %>.
+        </.link>
+      </div>
 
-    <h1 :if={not is_nil(@player)}>You have joined the game as <%= @player %></h1>
+      <h1 :if={not is_nil(@player)}>You have joined the game as <%= @player %></h1>
 
-    <div :if={Game.available_players(@game) == []}>
-      <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
-      <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
-      <div class="grid grid-cols-3 grid-rows-3 gap-12">
-        <div
-          :for={{position, player} <- positions(@board)}
-          class="border-solid border-2 border-sky-500 h-40 min-w-1"
-        >
-          <.link
-            :if={is_nil(player) and @game.status == :incomplete and Game.get_turn(@game) == @player}
-            phx-click="move"
-            phx-value-position={position}
+      <div :if={Game.available_players(@game) == []}>
+        <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
+        <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
+        <div class="grid grid-cols-3 grid-rows-3 gap-12">
+          <div
+            :for={{position, player} <- positions(@board)}
+            class="border-solid border-2 border-sky-500 h-40 min-w-1"
           >
-            move here
-          </.link>
-          <%= player %>
+            <.link
+              :if={is_nil(player) and @game.status == :incomplete and Game.get_turn(@game) == @player}
+              phx-click="move"
+              phx-value-position={position}
+            >
+              move here
+            </.link>
+            <%= player %>
+          </div>
         </div>
       </div>
     </div>
