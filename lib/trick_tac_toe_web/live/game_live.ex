@@ -2,6 +2,7 @@ defmodule TrickTacToeWeb.GameLive do
   use TrickTacToeWeb, :live_view
 
   alias TrickTacToe.{Board, Game, GameServer, GameSupervisor}
+  alias TrickTacToeWeb.Endpoint
 
   @impl true
   def mount(_params, _session, socket) do
@@ -67,7 +68,7 @@ defmodule TrickTacToeWeb.GameLive do
          socket
          |> assign_game(game)
          |> assign(:player, player)
-         |> push_event("store", %{key: game_id, data: player})}
+         |> push_event("store", %{key: game_id, data: serialize_to_token(player)})}
 
       {:error, _error} ->
         {:noreply, socket |> assign_error(:player_taken)}
@@ -93,10 +94,9 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   @impl true
-  def handle_event("restore-player", data, socket) do
-    case data do
-      %{"player" => player_string} ->
-        player = String.to_existing_atom(player_string)
+  def handle_event("restore-player", token, socket) when is_binary(token) do
+    case restore_from_token(token) do
+      {:ok, player} ->
         {:noreply, socket |> assign(:player, player)}
 
       _ ->
@@ -164,4 +164,22 @@ defmodule TrickTacToeWeb.GameLive do
   defp error_string(:wrong_player), do: "It's not your turn!"
   defp error_string(:position_taken), do: "That position is taken!"
   defp error_string(:game_over), do: "The game is over!"
+
+  defp serialize_to_token(data) do
+    Phoenix.Token.encrypt(Endpoint, salt(), data)
+  end
+
+  defp restore_from_token(token) do
+    case Phoenix.Token.decrypt(Endpoint, salt(), token) do
+      {:ok, data} ->
+        {:ok, data}
+
+      {:error, reason} ->
+        {:error, "Failed to restore previous state. Reason: #{inspect(reason)}."}
+    end
+  end
+
+  defp salt do
+    Application.get_env(:trick_tac_toe, Endpoint)[:live_view][:signing_salt]
+  end
 end

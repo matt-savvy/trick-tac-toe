@@ -34,9 +34,9 @@ const Hooks = {
             sessionStorage.setItem(obj.key, obj.data);
         },
         restore(obj) {
-            const player = sessionStorage.getItem(obj.key);
-            if (player) {
-                this.pushEvent("restore-player", { player: player });
+            const data = sessionStorage.getItem(obj.key);
+            if (data) {
+                this.pushEvent("restore-player", data);
             }
         },
     }
