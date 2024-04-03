@@ -23,7 +23,26 @@ import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken } })
+
+const Hooks = {
+    LocalStateStore: {
+        mounted() {
+            this.handleEvent("store", (obj) => this.store(obj));
+            this.handleEvent("restore", (obj) => this.restore(obj));
+        },
+        store(obj) {
+            sessionStorage.setItem(obj.key, obj.data);
+        },
+        restore(obj) {
+            const player = sessionStorage.getItem(obj.key);
+            if (player) {
+                this.pushEvent("restore-player", { player: player });
+            }
+        },
+    }
+}
+
+let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
 
 // Show progress bar on live navigation and form submits
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" })
