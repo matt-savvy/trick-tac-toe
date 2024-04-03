@@ -36,13 +36,7 @@ defmodule TrickTacToeWeb.GameLive do
         |> assign(:game_id, id)
         |> assign(:player, nil)
         |> assign_game(game)
-        |> then(fn socket ->
-          if connected?(socket) do
-            push_event(socket, "restore", %{key: id})
-          else
-            socket
-          end
-        end)
+        |> push_event("restore", %{key: id})
 
       {:error, :not_found} ->
         raise TrickTacToeWeb.NotFound
