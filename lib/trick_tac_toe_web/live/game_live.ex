@@ -138,7 +138,10 @@ defmodule TrickTacToeWeb.GameLive do
         <div class="grid grid-cols-3 grid-rows-3 gap-0 justify-items-center">
           <div
             :for={{position, player} <- positions(@board)}
-            class="border-solid border-2 border-slate-500 w-full aspect-square flex items-center justify-center"
+            class={[
+              "border-solid border-2 border-slate-500 w-full aspect-square flex items-center justify-center",
+              move_allowed?(player, @game, @player) && "hover:bg-sky-100 hover:cursor-pointer"
+            ]}
           >
             <.link
               :if={move_allowed?(player, @game, @player)}
