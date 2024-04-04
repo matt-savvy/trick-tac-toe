@@ -153,7 +153,7 @@ defmodule TrickTacToeWeb.GameLive do
 
   defp player(assigns) do
     ~H"""
-    <span class="">
+    <span class="font-sans text-5xl lg:text-7xl">
       <%= render_slot(@inner_block) %>
     </span>
     """
