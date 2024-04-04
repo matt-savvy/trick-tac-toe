@@ -141,11 +141,21 @@ defmodule TrickTacToeWeb.GameLive do
             >
               move here
             </.link>
-            <%= player %>
+            <.player>
+              <%= player %>
+            </.player>
           </div>
         </div>
       </div>
     </div>
+    """
+  end
+
+  defp player(assigns) do
+    ~H"""
+    <span class="">
+      <%= render_slot(@inner_block) %>
+    </span>
     """
   end
 
