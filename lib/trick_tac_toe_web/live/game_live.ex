@@ -114,6 +114,12 @@ defmodule TrickTacToeWeb.GameLive do
     {:noreply, socket |> put_flash(:error, "The game has been closed due to inactivity.")}
   end
 
+  defp move_allowed?(_square_player = nil, %Game{status: :incomplete} = game, player) do
+    Game.get_turn(game) == player
+  end
+
+  defp move_allowed?(_square_player, _game, _player), do: false
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -135,7 +141,7 @@ defmodule TrickTacToeWeb.GameLive do
             class="border-solid border-2 border-slate-500 w-full aspect-square flex items-center justify-center"
           >
             <.link
-              :if={is_nil(player) and @game.status == :incomplete and Game.get_turn(@game) == @player}
+              :if={move_allowed?(player, @game, @player)}
               phx-click="move"
               phx-value-position={position}
             >
