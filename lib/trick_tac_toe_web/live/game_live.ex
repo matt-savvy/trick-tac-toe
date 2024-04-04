@@ -142,14 +142,9 @@ defmodule TrickTacToeWeb.GameLive do
               "border-solid border-2 border-slate-500 w-full aspect-square flex items-center justify-center",
               move_allowed?(player, @game, @player) && "hover:bg-sky-100 hover:cursor-pointer"
             ]}
+            phx-click={move_allowed?(player, @game, @player) && "move"}
+            phx-value-position={position}
           >
-            <.link
-              :if={move_allowed?(player, @game, @player)}
-              phx-click="move"
-              phx-value-position={position}
-            >
-              move here
-            </.link>
             <.player>
               <%= player %>
             </.player>
