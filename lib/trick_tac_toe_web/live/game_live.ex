@@ -132,7 +132,7 @@ defmodule TrickTacToeWeb.GameLive do
         <div class="grid grid-cols-3 grid-rows-3 gap-0 justify-items-center">
           <div
             :for={{position, player} <- positions(@board)}
-            class="border-solid border-2 border-sky-500 w-full aspect-square flex items-center justify-center"
+            class="border-solid border-2 border-slate-500 w-full aspect-square flex items-center justify-center"
           >
             <.link
               :if={is_nil(player) and @game.status == :incomplete and Game.get_turn(@game) == @player}
