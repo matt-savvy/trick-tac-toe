@@ -129,10 +129,10 @@ defmodule TrickTacToeWeb.GameLive do
       <div :if={Game.available_players(@game) == []}>
         <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
         <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
-        <div class="grid grid-cols-3 grid-rows-3 gap-12">
+        <div class="grid grid-cols-3 grid-rows-3 gap-2 justify-items-center">
           <div
             :for={{position, player} <- positions(@board)}
-            class="border-solid border-2 border-sky-500 h-40 min-w-1"
+            class="border-solid border-2 border-sky-500 h-24 w-24 md:h-32 md:w-32 lg:h-48 lg:w-48"
           >
             <.link
               :if={is_nil(player) and @game.status == :incomplete and Game.get_turn(@game) == @player}
