@@ -10,8 +10,11 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  def handle_params(params, url, socket) do
+    {:noreply,
+     socket
+     |> assign_new(:url, fn -> url end)
+     |> apply_action(socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :new, _params) do
@@ -140,9 +143,10 @@ defmodule TrickTacToeWeb.GameLive do
 
       <div :if={not is_nil(@player)}>
         You have joined the game as <%= @player %>.
-        <span :for={player <- Game.available_players(@game)}>
+        <div :for={player <- Game.available_players(@game)}>
           Waiting for <%= player %> to join.
-        </span>
+          Send them this link to join the game: <%= @url %>
+        </div>
       </div>
 
       <div :if={show_board?(@game, @player)}>
