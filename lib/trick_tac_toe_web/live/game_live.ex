@@ -161,7 +161,7 @@ defmodule TrickTacToeWeb.GameLive do
         </div>
       </div>
 
-      <div :if={show_board?(@game, @player)}>
+      <div :if={show_board?(@game, @player)} class="w-5/6 mx-auto">
         <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
         <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
         <div class="grid grid-cols-3 grid-rows-3 gap-0 justify-items-center">
