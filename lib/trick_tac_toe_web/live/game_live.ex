@@ -138,7 +138,12 @@ defmodule TrickTacToeWeb.GameLive do
         </.link>
       </div>
 
-      <h1 :if={not is_nil(@player)}>You have joined the game as <%= @player %></h1>
+      <div :if={not is_nil(@player)}>
+        You have joined the game as <%= @player %>.
+        <span :for={player <- Game.available_players(@game)}>
+          Waiting for <%= player %> to join.
+        </span>
+      </div>
 
       <div :if={show_board?(@game, @player)}>
         <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
