@@ -29,6 +29,7 @@ const Hooks = {
         mounted() {
             this.handleEvent("store", (obj) => this.store(obj));
             this.handleEvent("restore", (obj) => this.restore(obj));
+            this.handleEvent("copyLink", (obj) => this.copyLink(obj));
         },
         store(obj) {
             sessionStorage.setItem(obj.key, obj.data);
@@ -39,7 +40,10 @@ const Hooks = {
                 this.pushEvent("restore-player", data);
             }
         },
-    }
+        copyLink(obj) {
+            navigator.clipboard.writeText(obj.url)
+        }
+    },
 }
 
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });

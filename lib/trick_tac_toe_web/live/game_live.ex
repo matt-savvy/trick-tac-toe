@@ -108,6 +108,11 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   @impl true
+  def handle_event("copy-link", _, socket) do
+    {:noreply, socket |> push_event("copyLink", %{url: socket.assigns.url})}
+  end
+
+  @impl true
   def handle_info({:update, game}, socket) do
     {:noreply, socket |> assign_game(game)}
   end
@@ -145,7 +150,14 @@ defmodule TrickTacToeWeb.GameLive do
         You have joined the game as <%= @player %>.
         <div :for={player <- Game.available_players(@game)}>
           Waiting for <%= player %> to join.
-          Send them this link to join the game: <%= @url %>
+          Send them this link to join the game:
+          <.link
+            phx-click="copy-link"
+            title="Click to copy link"
+            class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+          >
+            <.icon name="hero-clipboard" /> Click here to copy game link.
+          </.link>
         </div>
       </div>
 
