@@ -120,6 +120,14 @@ defmodule TrickTacToeWeb.GameLive do
 
   defp move_allowed?(_square_player, _game, _player), do: false
 
+  defp show_board?(%Game{players: %{x: true}}, :x), do: true
+
+  defp show_board?(%Game{players: players}, :o) do
+    players.x and players.o
+  end
+
+  defp show_board?(_game, nil), do: false
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -132,7 +140,7 @@ defmodule TrickTacToeWeb.GameLive do
 
       <h1 :if={not is_nil(@player)}>You have joined the game as <%= @player %></h1>
 
-      <div :if={Game.available_players(@game) == []}>
+      <div :if={show_board?(@game, @player)}>
         <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
         <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
         <div class="grid grid-cols-3 grid-rows-3 gap-0 justify-items-center">
