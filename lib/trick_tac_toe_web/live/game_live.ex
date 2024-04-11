@@ -130,11 +130,9 @@ defmodule TrickTacToeWeb.GameLive do
 
   defp show_board?(%Game{players: %{x: true}}, :x), do: true
 
-  defp show_board?(%Game{players: players}, :o) do
+  defp show_board?(%Game{players: players}, _player) do
     players.x and players.o
   end
-
-  defp show_board?(_game, nil), do: false
 
   @impl true
   def render(assigns) do
