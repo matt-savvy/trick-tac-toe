@@ -3,14 +3,18 @@ defmodule TrickTacToe.GameSupervisor do
 
   alias TrickTacToe.GameServer
 
-  @agent_name TrickTacToe.GameSupervisor.IdAgent
+  @agent_name {:global, TrickTacToe.GameSupervisor.IdAgent}
 
   def start_link(init_arg) do
-    {:ok, _pid} = Agent.start_link(fn -> 0 end, name: @agent_name)
     DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
   def new_game do
+    case :global.whereis_name(@agent_name) do
+      :undefined -> Agent.start_link(fn -> 0 end, name: @agent_name)
+      _pid -> :noop
+    end
+
     :global.trans(
       {:new_game, self()},
       fn ->
