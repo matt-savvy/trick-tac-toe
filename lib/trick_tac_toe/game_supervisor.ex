@@ -22,7 +22,7 @@ defmodule TrickTacToe.GameSupervisor do
 
         with {:ok, pid} <- DynamicSupervisor.start_child(__MODULE__, {GameServer, game_id}) do
           game = GameServer.get_state(pid)
-          Agent.update(@agent_name, fn _ -> game_id end)
+          Agent.update(@agent_name, fn _ -> game_id + 1 end)
 
           {:ok, game, game_id}
         end
