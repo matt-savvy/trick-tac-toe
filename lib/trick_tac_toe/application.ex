@@ -11,7 +11,6 @@ defmodule TrickTacToe.Application do
       TrickTacToeWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:trick_tac_toe, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: TrickTacToe.PubSub},
-      {Registry, keys: :unique, name: TrickTacToe.Registry},
       TrickTacToe.GameSupervisor,
       # Start to serve requests, typically the last entry
       TrickTacToeWeb.Endpoint
