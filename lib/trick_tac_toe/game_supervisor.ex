@@ -3,7 +3,10 @@ defmodule TrickTacToe.GameSupervisor do
 
   alias TrickTacToe.GameServer
 
+  @agent_name TrickTacToe.GameSupervisor.IdAgent
+
   def start_link(init_arg) do
+    {:ok, _pid} = Agent.start_link(fn -> 0 end, name: @agent_name)
     DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
@@ -15,6 +18,8 @@ defmodule TrickTacToe.GameSupervisor do
 
         with {:ok, pid} <- DynamicSupervisor.start_child(__MODULE__, {GameServer, game_id}) do
           game = GameServer.get_state(pid)
+          Agent.update(@agent_name, fn _ -> game_id end)
+
           {:ok, game, game_id}
         end
       end
@@ -22,7 +27,8 @@ defmodule TrickTacToe.GameSupervisor do
   end
 
   defp next_id do
-    do_next_id(0)
+    id = Agent.get(@agent_name, & &1)
+    do_next_id(id)
   end
 
   defp do_next_id(id) do
