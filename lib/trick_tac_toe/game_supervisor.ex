@@ -15,19 +15,20 @@ defmodule TrickTacToe.GameSupervisor do
       _pid -> :noop
     end
 
-    :global.trans(
-      {:new_game, self()},
-      fn ->
-        game_id = next_id()
+    :global.trans({:new_game, self()}, &do_new_game/0)
+  end
 
-        with {:ok, pid} <- DynamicSupervisor.start_child(__MODULE__, {GameServer, game_id}) do
-          game = GameServer.get_state(pid)
-          Agent.update(@agent_name, fn _ -> game_id + 1 end)
+  defp do_new_game do
+    game_id = next_id()
 
-          {:ok, game, game_id}
-        end
-      end
-    )
+    with {:ok, pid} <- DynamicSupervisor.start_child(__MODULE__, {GameServer, game_id}) do
+      game = GameServer.get_state(pid)
+      Agent.update(@agent_name, fn _ -> game_id + 1 end)
+
+      {:ok, game, game_id}
+    else
+      {:error, {:already_started, _pid}} -> do_new_game()
+    end
   end
 
   defp next_id do
