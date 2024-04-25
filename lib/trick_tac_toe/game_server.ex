@@ -24,9 +24,9 @@ defmodule TrickTacToe.GameServer do
   end
 
   def get_state(id) do
-    case GenServer.whereis(name(id)) do
-      nil -> {:error, :not_found}
-      pid -> {:ok, GenServer.call(pid, :get_state)}
+    case :global.whereis_name(global_id(id)) do
+      :undefined -> {:error, :not_found}
+      pid when is_pid(pid) -> {:ok, GenServer.call(pid, :get_state)}
     end
   end
 
@@ -53,7 +53,11 @@ defmodule TrickTacToe.GameServer do
   messages to the GameServer.
   """
   def name(id) do
-    {:via, Registry, {TrickTacToe.Registry, id}}
+    {:global, global_id(id)}
+  end
+
+  defp global_id(id) do
+    {:game, id}
   end
 
   @doc """
