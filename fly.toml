@@ -13,6 +13,7 @@ kill_signal = 'SIGTERM'
   PHX_HOST = 'tricktactoe.fly.dev'
   PORT = '8080'
   DNS_CLUSTER_QUERY = "tricktactoe.internal"
+  RELEASE_COOKIE = "5kwAeFb0YiLdIRN63CTj_rtwpYe30qwugPIrUT6bgz6kx8CMUK0MrA=="
 
 [http_service]
   internal_port = 8080
