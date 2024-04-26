@@ -11,7 +11,7 @@ defmodule TrickTacToe.GameSupervisor do
 
   def new_game do
     case :global.whereis_name(@agent_name) do
-      :undefined -> Agent.start_link(fn -> 0 end, name: @agent_name)
+      :undefined -> Agent.start_link(fn -> 1 end, name: @agent_name)
       _pid -> :noop
     end
 
