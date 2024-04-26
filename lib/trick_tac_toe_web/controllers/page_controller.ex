@@ -6,4 +6,8 @@ defmodule TrickTacToeWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def rules(conn, _params) do
+    render(conn, :rules)
+  end
 end
