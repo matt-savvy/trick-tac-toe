@@ -19,7 +19,7 @@ defmodule TrickTacToeWeb.GameLive do
 
   defp apply_action(socket, :new, _params) do
     with {:ok, _game, game_id} <- GameSupervisor.new_game() do
-      socket |> push_redirect(to: ~p"/#{game_id}")
+      socket |> push_navigate(to: ~p"/#{game_id}")
     end
   end
 
