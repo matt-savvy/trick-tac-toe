@@ -5,23 +5,23 @@ defmodule TrickTacToe.GameSupervisor do
 
   @agent_name {:global, TrickTacToe.GameSupervisor.IdAgent}
 
-  def start_link(init_arg) do
-    DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+  def start_link(init_arg, name \\ __MODULE__) do
+    DynamicSupervisor.start_link(__MODULE__, init_arg, name: name)
   end
 
-  def new_game do
+  def new_game(supervisor_name \\ __MODULE__) do
     case :global.whereis_name(@agent_name) do
       :undefined -> Agent.start_link(fn -> 1 end, name: @agent_name)
       _pid -> :noop
     end
 
-    :global.trans({:new_game, self()}, &do_new_game/0)
+    :global.trans({:new_game, self()}, fn -> do_new_game(supervisor_name) end)
   end
 
-  defp do_new_game do
+  defp do_new_game(supervisor_name \\ __MODULE__) do
     game_id = next_id()
 
-    with {:ok, pid} <- DynamicSupervisor.start_child(__MODULE__, {GameServer, game_id}) do
+    with {:ok, pid} <- DynamicSupervisor.start_child(supervisor_name, {GameServer, game_id}) do
       game = GameServer.get_state(pid)
       Agent.update(@agent_name, fn _ -> game_id + 1 end)
 
