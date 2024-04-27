@@ -17,6 +17,16 @@ defmodule TrickTacToe.GameServer do
   end
 
   @doc """
+  Returns true if a GameServer process exists for this id
+  """
+  def game_exists?(id) do
+    case :global.whereis_name(global_id(id)) do
+      :undefined -> false
+      pid when is_pid(pid) -> true
+    end
+  end
+
+  @doc """
   Returns the state of the GameServer for the given pid or id.
   """
   def get_state(pid) when is_pid(pid) do
