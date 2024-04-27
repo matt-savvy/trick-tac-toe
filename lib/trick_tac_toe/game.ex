@@ -1,6 +1,7 @@
 defmodule TrickTacToe.Game do
   defstruct [
     :id,
+    :next_game,
     status: :incomplete,
     moves: [],
     players: %{x: false, o: false}
