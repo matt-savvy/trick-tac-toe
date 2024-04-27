@@ -37,9 +37,9 @@ defmodule TrickTacToe.GameSupervisor do
   end
 
   defp do_next_id(id) do
-    case GameServer.get_state(id) do
-      {:error, :not_found} -> id
-      {:ok, _state} -> do_next_id(id + 1)
+    case GameServer.game_exists?(id) do
+      false -> id
+      true -> do_next_id(id + 1)
     end
   end
 
