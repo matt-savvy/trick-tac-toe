@@ -4,9 +4,15 @@ defmodule TrickTacToe.GameSupervisorTest do
   alias TrickTacToe.{Game, GameServer, GameSupervisor}
 
   @timeout 100
+  @supervisor_name TestGameSupervisor
 
   setup do
     Application.put_env(TrickTacToe, :timeout, @timeout)
+
+    start_supervised!(%{
+      id: @supervisor_name,
+      start: {GameSupervisor, :start_link, [[], @supervisor_name]}
+    })
 
     on_exit(fn ->
       Application.delete_env(TrickTacToe, :timeout)
@@ -14,9 +20,9 @@ defmodule TrickTacToe.GameSupervisorTest do
   end
 
   test "integration test" do
-    assert {:ok, %Game{}, game_1_id} = GameSupervisor.new_game()
-    assert {:ok, %Game{}, game_2_id} = GameSupervisor.new_game()
-    assert {:ok, %Game{}, game_3_id} = GameSupervisor.new_game()
+    assert {:ok, %Game{}, game_1_id} = GameSupervisor.new_game(@supervisor_name)
+    assert {:ok, %Game{}, game_2_id} = GameSupervisor.new_game(@supervisor_name)
+    assert {:ok, %Game{}, game_3_id} = GameSupervisor.new_game(@supervisor_name)
 
     {:ok, game_1} = GameServer.join(game_1_id, :x)
     {:ok, game_2} = GameServer.join(game_2_id, :o)
@@ -31,9 +37,9 @@ defmodule TrickTacToe.GameSupervisorTest do
              {:undefined, game_1_pid, :worker, [GameServer]},
              {:undefined, game_2_pid, :worker, [GameServer]},
              {:undefined, game_3_pid, :worker, [GameServer]}
-           ] = DynamicSupervisor.which_children(GameSupervisor)
+           ] = DynamicSupervisor.which_children(@supervisor_name)
 
-    game_supervisor_pid = Process.whereis(GameSupervisor)
+    game_supervisor_pid = Process.whereis(@supervisor_name)
     game_supervisor_ref = Process.monitor(game_supervisor_pid)
 
     # restart when GameServer dies unexpecteadly, other GameServers stay alive
