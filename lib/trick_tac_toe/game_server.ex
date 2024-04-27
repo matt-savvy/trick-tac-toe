@@ -132,10 +132,15 @@ defmodule TrickTacToe.GameServer do
   end
 
   @impl true
-  def handle_call(:play_again, _from, state) do
+  def handle_call(:play_again, _from, %{next_game: nil} = state) do
     {:ok, _game, next_id} = GameSupervisor.new_game()
 
     {:reply, next_id, %{state | next_game: next_id}}
+  end
+
+  @impl true
+  def handle_call(:play_again, _from, %{next_game: next_id} = state) do
+    {:reply, next_id, state}
   end
 
   @impl true

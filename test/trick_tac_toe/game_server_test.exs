@@ -45,5 +45,6 @@ defmodule TrickTacToe.GameServerTest do
 
     assert next_id = GameServer.play_again(id)
     assert {:ok, _game} = GameServer.get_state(next_id)
+    assert ^next_id = GameServer.play_again(id)
   end
 end
