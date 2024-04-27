@@ -19,7 +19,7 @@ defmodule TrickTacToeWeb.GameLive do
 
   defp apply_action(socket, :new, _params) do
     with {:ok, _game, game_id} <- GameSupervisor.new_game() do
-      socket |> push_navigate(to: ~p"/#{game_id}")
+      socket |> navigate_to_game(game_id)
     end
   end
 
@@ -118,7 +118,7 @@ defmodule TrickTacToeWeb.GameLive do
 
     {:noreply,
      socket
-     |> push_navigate(to: ~p"/#{next_game_id}")
+     |> navigate_to_game(next_game_id)
      |> put_flash(:info, "A new game has started!")}
   end
 
@@ -131,13 +131,18 @@ defmodule TrickTacToeWeb.GameLive do
   def handle_info({:next_game, next_game_id}, socket) do
     {:noreply,
      socket
-     |> push_navigate(to: ~p"/#{next_game_id}")
+     |> navigate_to_game(next_game_id)
      |> put_flash(:info, "A new game has started!")}
   end
 
   @impl true
   def handle_info({:DOWN, _ref, :process, _pid, {:shutdown, :timeout}}, socket) do
     {:noreply, socket |> put_flash(:error, "The game has been closed due to inactivity.")}
+  end
+
+  defp navigate_to_game(socket, game_id) do
+    socket
+    |> push_navigate(to: ~p"/#{game_id}")
   end
 
   defp move_allowed?(_square_player = nil, %Game{status: :incomplete} = game, player) do
