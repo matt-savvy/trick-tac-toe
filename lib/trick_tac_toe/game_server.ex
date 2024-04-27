@@ -83,6 +83,10 @@ defmodule TrickTacToe.GameServer do
   Broadcasts an :update message on the topic for the game, with
   the current state.
   """
+  def broadcast_update!(%Game{next_game: next_id} = game) when not is_nil(next_id) do
+    PubSub.broadcast!(TrickTacToe.PubSub, topic(game), {:next_game, next_id})
+  end
+
   def broadcast_update!(%Game{} = game) do
     PubSub.broadcast!(TrickTacToe.PubSub, topic(game), {:update, game})
   end
@@ -134,8 +138,10 @@ defmodule TrickTacToe.GameServer do
   @impl true
   def handle_call(:play_again, _from, %{next_game: nil} = state) do
     {:ok, _game, next_id} = GameSupervisor.new_game()
+    next_state = %{state | next_game: next_id}
+    broadcast_update!(next_state)
 
-    {:reply, next_id, %{state | next_game: next_id}}
+    {:reply, next_id, next_state}
   end
 
   @impl true

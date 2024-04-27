@@ -128,6 +128,14 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   @impl true
+  def handle_info({:next_game, next_game_id}, socket) do
+    {:noreply,
+     socket
+     |> push_navigate(to: ~p"/#{next_game_id}")
+     |> put_flash(:info, "A new game has started!")}
+  end
+
+  @impl true
   def handle_info({:DOWN, _ref, :process, _pid, {:shutdown, :timeout}}, socket) do
     {:noreply, socket |> put_flash(:error, "The game has been closed due to inactivity.")}
   end
