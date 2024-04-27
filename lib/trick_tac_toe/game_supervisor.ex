@@ -43,14 +43,6 @@ defmodule TrickTacToe.GameSupervisor do
     end
   end
 
-  def list_games do
-    DynamicSupervisor.which_children(__MODULE__)
-    |> Enum.map(fn
-      {:undefined, pid, :worker, [GameServer]} ->
-        {pid}
-    end)
-  end
-
   # server
   @impl true
   def init(_init_arg) do
