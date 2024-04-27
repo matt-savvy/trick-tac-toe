@@ -113,6 +113,16 @@ defmodule TrickTacToeWeb.GameLive do
   end
 
   @impl true
+  def handle_event("play-again", _, socket) do
+    next_game_id = socket.assigns.game_id |> GameServer.play_again()
+
+    {:noreply,
+     socket
+     |> push_navigate(to: ~p"/#{next_game_id}")
+     |> put_flash(:info, "A new game has started!")}
+  end
+
+  @impl true
   def handle_info({:update, game}, socket) do
     {:noreply, socket |> assign_game(game)}
   end
@@ -161,7 +171,12 @@ defmodule TrickTacToeWeb.GameLive do
 
       <div :if={show_board?(@game, @player)} class="sm:w-full md:w-5/6 mx-auto">
         <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
-        <h1 :if={@game.status != :incomplete}><%= status_string(@game.status) %></h1>
+        <h1 :if={@game.status != :incomplete}>
+          <%= status_string(@game.status) %>.
+          <.link phx-click="play-again" class="text-indigo-900 hover:text-indigo-600 font-semibold">
+            Click here to play again!
+          </.link>
+        </h1>
         <div class="grid grid-cols-3 grid-rows-3 gap-0 justify-items-center">
           <div
             :for={{position, player} <- positions(@board)}
