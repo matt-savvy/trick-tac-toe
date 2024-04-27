@@ -1,5 +1,5 @@
 defmodule TrickTacToe.GameServerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias TrickTacToe.{Game, GameServer}
 
@@ -42,5 +42,8 @@ defmodule TrickTacToe.GameServerTest do
             }} = GameServer.get_state(id)
 
     assert {:error, :not_found} = GameServer.get_state(-100)
+
+    assert next_id = GameServer.play_again(id)
+    assert {:ok, _game} = GameServer.get_state(next_id)
   end
 end

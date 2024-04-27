@@ -1,7 +1,7 @@
 defmodule TrickTacToe.GameServer do
   use GenServer, restart: :transient
 
-  alias TrickTacToe.Game
+  alias TrickTacToe.{Game, GameSupervisor}
 
   alias Phoenix.PubSub
 
@@ -56,6 +56,15 @@ defmodule TrickTacToe.GameServer do
     id
     |> name
     |> GenServer.call({:make_move, move})
+  end
+
+  @doc """
+  Start a new game, if applicable. Returns the next game's id.
+  """
+  def play_again(id) do
+    id
+    |> name
+    |> GenServer.call(:play_again)
   end
 
   @doc """
@@ -120,6 +129,13 @@ defmodule TrickTacToe.GameServer do
       {:error, error} ->
         reply_success({:error, error}, state)
     end
+  end
+
+  @impl true
+  def handle_call(:play_again, _from, state) do
+    {:ok, _game, next_id} = GameSupervisor.new_game()
+
+    {:reply, next_id, %{state | next_game: next_id}}
   end
 
   @impl true
