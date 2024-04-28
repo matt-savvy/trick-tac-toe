@@ -9,6 +9,10 @@ defmodule TrickTacToe.GameSupervisor do
     DynamicSupervisor.start_link(__MODULE__, init_arg, name: name)
   end
 
+  @doc """
+  Starts a new game under the given supervisor. Uses a global transaction
+  so we can be assured the game id is unique across nodes.
+  """
   def new_game(supervisor_name \\ __MODULE__) do
     case :global.whereis_name(@agent_name) do
       :undefined -> Agent.start_link(fn -> 1 end, name: @agent_name)
