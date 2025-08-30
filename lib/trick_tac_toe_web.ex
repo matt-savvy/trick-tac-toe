@@ -43,7 +43,7 @@ defmodule TrickTacToeWeb do
         layouts: [html: TrickTacToeWeb.Layouts]
 
       import Plug.Conn
-      import TrickTacToeWeb.Gettext
+      use Gettext, backend: TrickTacToeWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -85,7 +85,7 @@ defmodule TrickTacToeWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import TrickTacToeWeb.CoreComponents
-      import TrickTacToeWeb.Gettext
+      use Gettext, backend: TrickTacToeWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

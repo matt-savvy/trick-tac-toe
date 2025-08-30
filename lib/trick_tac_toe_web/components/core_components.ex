@@ -17,7 +17,7 @@ defmodule TrickTacToeWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import TrickTacToeWeb.Gettext
+  use Gettext, backend: TrickTacToeWeb.Gettext
 
   @doc """
   Renders a modal.
