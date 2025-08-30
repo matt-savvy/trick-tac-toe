@@ -223,9 +223,10 @@ defmodule TrickTacToeWeb.GameLive do
   defp status_string(:incomplete), do: nil
 
   defp positions(%Board{} = board) do
-    board
-    |> Map.from_struct()
-    |> Map.to_list()
+    for {k, v} <- Map.from_struct(board) do
+      {Atom.to_string(k), v}
+    end
+    |> Enum.sort_by(fn {k, _v} -> k end, :asc)
   end
 
   defp error_string(:player_taken), do: "That player is already taken!"
