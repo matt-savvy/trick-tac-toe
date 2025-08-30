@@ -163,14 +163,14 @@ defmodule TrickTacToeWeb.GameLive do
     <div id="game" phx-hook="LocalStateStore">
       <div :for={player <- Game.available_players(@game)} :if={is_nil(@player)}>
         <.link phx-click="join" phx-value-player={player}>
-          Join game as <%= player %>.
+          Join game as {player}.
         </.link>
       </div>
 
       <div :if={not is_nil(@player)}>
-        You have joined the game as <%= @player %>.
+        You have joined the game as {@player}.
         <div :for={player <- Game.available_players(@game)}>
-          Waiting for <%= player %> to join.
+          Waiting for {player} to join.
           Send them this link to join the game:
           <.link
             phx-click="copy-link"
@@ -183,9 +183,9 @@ defmodule TrickTacToeWeb.GameLive do
       </div>
 
       <div :if={show_board?(@game, @player)} class="sm:w-full md:w-5/6 mx-auto">
-        <h1 :if={@game.status == :incomplete}>It is player <%= Game.get_turn(@game) %>'s turn.</h1>
+        <h1 :if={@game.status == :incomplete}>It is player {Game.get_turn(@game)}'s turn.</h1>
         <h1 :if={@game.status != :incomplete}>
-          <%= status_string(@game.status) %>.
+          {status_string(@game.status)}.
           <.link phx-click="play-again" class="text-indigo-900 hover:text-indigo-600 font-semibold">
             Click here to play again!
           </.link>
@@ -201,7 +201,7 @@ defmodule TrickTacToeWeb.GameLive do
             phx-value-position={position}
           >
             <.player>
-              <%= player %>
+              {player}
             </.player>
           </div>
         </div>
@@ -213,7 +213,7 @@ defmodule TrickTacToeWeb.GameLive do
   defp player(assigns) do
     ~H"""
     <span class="font-sans text-5xl lg:text-7xl">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </span>
     """
   end
